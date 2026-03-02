@@ -124,10 +124,14 @@ export class CuentasService {
       // Buscar en identificación del cliente (solo si existe)
       if (cuenta.cliente?.identificacion?.toLowerCase().includes(term)) return true;
 
+      // Buscar en estado de la cuenta
+      const estadoCuentaText = cuenta.estado ? 'activa' : 'inactiva';
+      if (estadoCuentaText.includes(term)) return true;
+
       // Buscar en estado del cliente (solo si el cliente existe)
       if (cuenta.cliente) {
-        const estadoText = cuenta.cliente.estado ? 'activo' : 'inactivo';
-        if (estadoText.includes(term)) return true;
+        const estadoClienteText = cuenta.cliente.estado ? 'activo' : 'inactivo';
+        if (estadoClienteText.includes(term)) return true;
       }
 
       return false;

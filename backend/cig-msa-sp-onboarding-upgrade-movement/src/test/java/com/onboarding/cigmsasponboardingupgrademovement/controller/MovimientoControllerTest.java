@@ -51,7 +51,7 @@ class MovimientoControllerTest {
     @BeforeEach
     void setUp() {
         ClienteDTO clienteDTO = new ClienteDTO(1L, "Juan Perez", "1234567890", 30, "MASCULINO", "0991234567", "Quito", "pass123", true);
-        cuentaDTO = new CuentaDTO(1L, "1234567890", "AHORROS", new BigDecimal("1000.0000"), clienteDTO);
+        cuentaDTO = new CuentaDTO(1L, "1234567890", "AHORROS", new BigDecimal("1000.0000"), true, clienteDTO);
 
         responseDTO = MovimientoResponseDTO.builder()
                 .movimientoId(1L)

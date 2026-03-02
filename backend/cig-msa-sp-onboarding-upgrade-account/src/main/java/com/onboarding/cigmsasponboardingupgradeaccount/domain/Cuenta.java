@@ -32,4 +32,7 @@ public class Cuenta {
 
     @Column(name = "saldo_inicial", precision = 14, scale = 4, nullable = false)
     private BigDecimal saldoInicial;
+
+    @Column(name = "estado", nullable = false, columnDefinition = "boolean default true")
+    private Boolean estado = true;
 }

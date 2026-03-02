@@ -32,6 +32,7 @@ public class MovimientoServiceImpl implements MovimientoService {
     @Override
     public MovimientoResponseDTO crear(MovimientoRequestDTO request) {
         CuentaDTO cuenta = cuentaClient.getCuentaById(request.getCuentaId());
+        validarEstadoCuentaYCliente(cuenta);
 
         Movimiento movimiento = movimientoMapper.toEntity(request);
 
@@ -81,6 +82,7 @@ public class MovimientoServiceImpl implements MovimientoService {
                         "Movimiento no encontrado con ID: " + id, HttpStatus.NOT_FOUND));
 
         CuentaDTO cuenta = cuentaClient.getCuentaById(request.getCuentaId());
+        validarEstadoCuentaYCliente(cuenta);
 
         movimiento.setCuentaId(request.getCuentaId());
         movimiento.setFecha(request.getFecha().atStartOfDay());
@@ -168,5 +170,18 @@ public class MovimientoServiceImpl implements MovimientoService {
         return tipo == TipoMovimiento.CREDITO
                 ? saldoActual.add(valor)
                 : saldoActual.subtract(valor);
+    }
+
+    private void validarEstadoCuentaYCliente(CuentaDTO cuenta) {
+        if (Boolean.FALSE.equals(cuenta.getEstado())) {
+            throw new MovementException(
+                    "No se puede registrar movimientos en una cuenta inactiva (cuenta: " + cuenta.getNumeroCuenta() + ")",
+                    HttpStatus.BAD_REQUEST, "cuentaId");
+        }
+        if (cuenta.getCliente() != null && Boolean.FALSE.equals(cuenta.getCliente().getEstado())) {
+            throw new MovementException(
+                    "No se puede registrar movimientos para un cliente inactivo (cliente: " + cuenta.getCliente().getNombre() + ")",
+                    HttpStatus.BAD_REQUEST, "cuentaId");
+        }
     }
 }

@@ -82,9 +82,9 @@ import { PaginatedResponse, PageParams, SortParams } from '../../../core/models/
     <!-- Confirmation Dialog -->
     <app-confirmation-dialog
       #confirmDialog
-      [title]="'Eliminar Cuenta'"
-      [message]="'¿Está seguro que desea eliminar esta cuenta? Esta acción no se puede deshacer.'"
-      [confirmText]="'Eliminar'"
+      [title]="'Desactivar Cuenta'"
+      [message]="'¿Está seguro que desea desactivar esta cuenta? La cuenta quedará en estado inactivo.'"
+      [confirmText]="'Desactivar'"
       [cancelText]="'Cancelar'"
       [confirmVariant]="'danger'"
       (confirmed)="handleDeleteConfirm($event)"
@@ -123,6 +123,12 @@ export class CuentasListComponent implements OnInit {
       customRender: (cuenta: Cuenta) => `$${cuenta.saldoInicial.toLocaleString('es-CO', { minimumFractionDigits: 2 })}`
     },
     {
+      key: 'estado',
+      label: 'Estado Cuenta',
+      sortable: true,
+      customRender: (cuenta: Cuenta) => cuenta.estado ? '✓ Activa' : '✗ Inactiva'
+    },
+    {
       key: 'cliente',
       label: 'Cliente',
       customRender: (cuenta: Cuenta) => cuenta.cliente?.nombre || 'Sin cliente'
@@ -133,9 +139,8 @@ export class CuentasListComponent implements OnInit {
       customRender: (cuenta: Cuenta) => cuenta.cliente?.identificacion || '-'
     },
     {
-      key: 'estado',
-      label: 'Estado',
-      sortable: true,
+      key: 'estadoCliente',
+      label: 'Estado Cliente',
       customRender: (cuenta: Cuenta) => cuenta.cliente?.estado ? '✓ Activo' : '✗ Inactivo'
     }
   ];
@@ -152,7 +157,7 @@ export class CuentasListComponent implements OnInit {
       handler: (cuenta: Cuenta) => this.editCuenta(cuenta)
     },
     {
-      label: 'Eliminar',
+      label: 'Desactivar',
       variant: 'danger',
       handler: (cuenta: Cuenta) => this.deleteCuenta(cuenta)
     }
@@ -220,14 +225,14 @@ export class CuentasListComponent implements OnInit {
 
   handleDeleteConfirm(confirmed: boolean): void {
     if (confirmed && this.cuentaToDelete()) {
-      this.cuentasService.delete(this.cuentaToDelete()!).subscribe({
+      this.cuentasService.update(this.cuentaToDelete()!, { estado: false }).subscribe({
         next: () => {
-          this.notificationService.success('Cuenta eliminada correctamente');
+          this.notificationService.success('Cuenta desactivada correctamente');
           this.loadCuentas();
         },
         error: (error) => {
-          this.notificationService.error('Error al eliminar la cuenta');
-          console.error('Error deleting cuenta:', error);
+          this.notificationService.error('Error al desactivar la cuenta');
+          console.error('Error deactivating cuenta:', error);
         }
       });
     }

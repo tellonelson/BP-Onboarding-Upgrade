@@ -48,7 +48,7 @@ class CuentaControllerTest {
     @BeforeEach
     void setUp() {
         clienteDTO = new ClienteResponseDTO(1L, "Juan Perez", "1234567890", 30, "MASCULINO", "0991234567", "Quito", "pass123", true);
-        responseDTO = new CuentaResponseDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"), clienteDTO);
+        responseDTO = new CuentaResponseDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"), true, clienteDTO);
     }
 
     @Nested
@@ -58,7 +58,7 @@ class CuentaControllerTest {
         @Test
         @DisplayName("Debe crear una cuenta y retornar 201")
         void crearCuentaExitosamente() throws Exception {
-            CuentaRequestDTO request = new CuentaRequestDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"));
+            CuentaRequestDTO request = new CuentaRequestDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"), true);
             when(cuentaService.crear(any(CuentaRequestDTO.class))).thenReturn(responseDTO);
 
             mockMvc.perform(post("/cuentas")
@@ -75,7 +75,7 @@ class CuentaControllerTest {
         @Test
         @DisplayName("Debe retornar 400 cuando clienteId es null")
         void crearCuentaSinClienteId() throws Exception {
-            CuentaRequestDTO request = new CuentaRequestDTO(null, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"));
+            CuentaRequestDTO request = new CuentaRequestDTO(null, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"), true);
 
             mockMvc.perform(post("/cuentas")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -86,7 +86,7 @@ class CuentaControllerTest {
         @Test
         @DisplayName("Debe retornar 400 cuando numeroCuenta es blank")
         void crearCuentaSinNumeroCuenta() throws Exception {
-            CuentaRequestDTO request = new CuentaRequestDTO(1L, "", TypeEnum.AHORROS, new BigDecimal("1000.0000"));
+            CuentaRequestDTO request = new CuentaRequestDTO(1L, "", TypeEnum.AHORROS, new BigDecimal("1000.0000"), true);
 
             mockMvc.perform(post("/cuentas")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +97,7 @@ class CuentaControllerTest {
         @Test
         @DisplayName("Debe retornar 400 cuando tipoCuenta es null")
         void crearCuentaSinTipoCuenta() throws Exception {
-            CuentaRequestDTO request = new CuentaRequestDTO(1L, "1234567890", null, new BigDecimal("1000.0000"));
+            CuentaRequestDTO request = new CuentaRequestDTO(1L, "1234567890", null, new BigDecimal("1000.0000"), true);
 
             mockMvc.perform(post("/cuentas")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -108,7 +108,7 @@ class CuentaControllerTest {
         @Test
         @DisplayName("Debe retornar 400 cuando saldoInicial es negativo")
         void crearCuentaSaldoNegativo() throws Exception {
-            CuentaRequestDTO request = new CuentaRequestDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("-100.00"));
+            CuentaRequestDTO request = new CuentaRequestDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("-100.00"), true);
 
             mockMvc.perform(post("/cuentas")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -198,8 +198,8 @@ class CuentaControllerTest {
         @Test
         @DisplayName("Debe actualizar una cuenta y retornar 200")
         void actualizarExitosamente() throws Exception {
-            CuentaUpdateDTO updateRequest = new CuentaUpdateDTO(null, "9999999999", TypeEnum.CORRIENTE, new BigDecimal("5000.0000"));
-            CuentaResponseDTO updatedResponse = new CuentaResponseDTO(1L, "9999999999", TypeEnum.CORRIENTE, new BigDecimal("5000.0000"), clienteDTO);
+            CuentaUpdateDTO updateRequest = new CuentaUpdateDTO(null, "9999999999", TypeEnum.CORRIENTE, new BigDecimal("5000.0000"), null);
+            CuentaResponseDTO updatedResponse = new CuentaResponseDTO(1L, "9999999999", TypeEnum.CORRIENTE, new BigDecimal("5000.0000"), true, clienteDTO);
 
             when(cuentaService.actualizar(eq(1L), any(CuentaUpdateDTO.class))).thenReturn(updatedResponse);
 
@@ -214,7 +214,7 @@ class CuentaControllerTest {
         @Test
         @DisplayName("Debe retornar 404 cuando la cuenta a actualizar no existe")
         void actualizarNoExiste() throws Exception {
-            CuentaUpdateDTO updateRequest = new CuentaUpdateDTO(null, null, null, new BigDecimal("2000.0000"));
+            CuentaUpdateDTO updateRequest = new CuentaUpdateDTO(null, null, null, new BigDecimal("2000.0000"), null);
 
             when(cuentaService.actualizar(eq(99L), any(CuentaUpdateDTO.class)))
                     .thenThrow(new AcccountException("Cuenta no encontrada con id: 99", HttpStatus.NOT_FOUND));
@@ -228,7 +228,7 @@ class CuentaControllerTest {
         @Test
         @DisplayName("Debe retornar 409 cuando el numero de cuenta ya esta en uso")
         void actualizarNumeroCuentaDuplicado() throws Exception {
-            CuentaUpdateDTO updateRequest = new CuentaUpdateDTO(null, "DUPLICADO", null, null);
+            CuentaUpdateDTO updateRequest = new CuentaUpdateDTO(null, "DUPLICADO", null, null, null);
 
             when(cuentaService.actualizar(eq(1L), any(CuentaUpdateDTO.class)))
                     .thenThrow(new AcccountException("El número de cuenta ya está en uso", HttpStatus.CONFLICT, "numeroCuenta"));

@@ -65,13 +65,13 @@ class CuentaServiceImplTest {
     void setUp() {
         clienteDTO = new ClienteResponseDTO(1L, "Juan Perez", "1234567890", 30, "MASCULINO", "0991234567", "Quito", "pass123", true);
 
-        cuenta = new Cuenta(1L, 1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"));
+        cuenta = new Cuenta(1L, 1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"), true);
 
-        requestDTO = new CuentaRequestDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"));
+        requestDTO = new CuentaRequestDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"), true);
 
         updateDTO = new CuentaUpdateDTO();
 
-        responseDTO = new CuentaResponseDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"), clienteDTO);
+        responseDTO = new CuentaResponseDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"), true, clienteDTO);
     }
 
     @Nested
@@ -203,7 +203,7 @@ class CuentaServiceImplTest {
         @Test
         @DisplayName("Debe retornar cuenta con cliente null cuando el servicio de clientes falla")
         void listarTodasClienteFalla() {
-            CuentaResponseDTO responseSinCliente = new CuentaResponseDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"), null);
+            CuentaResponseDTO responseSinCliente = new CuentaResponseDTO(1L, "1234567890", TypeEnum.AHORROS, new BigDecimal("1000.0000"), true, null);
             when(cuentaRepository.findAll()).thenReturn(List.of(cuenta));
             when(clienteClient.getClienteById(1L)).thenThrow(new RuntimeException("Service unavailable"));
             when(cuentaMapper.toResponseDTO(cuenta, null)).thenReturn(responseSinCliente);
@@ -250,9 +250,9 @@ class CuentaServiceImplTest {
         @Test
         @DisplayName("Debe actualizar todos los campos de la cuenta")
         void actualizarTodosCampos() {
-            updateDTO = new CuentaUpdateDTO(2L, "9999999999", TypeEnum.CORRIENTE, new BigDecimal("5000.0000"));
+            updateDTO = new CuentaUpdateDTO(2L, "9999999999", TypeEnum.CORRIENTE, new BigDecimal("5000.0000"), true);
             ClienteResponseDTO nuevoCliente = new ClienteResponseDTO(2L, "Maria Lopez", "0987654321", 25, "FEMENINO", "0997654321", "Guayaquil", "pass456", true);
-            CuentaResponseDTO updatedResponse = new CuentaResponseDTO(1L, "9999999999", TypeEnum.CORRIENTE, new BigDecimal("5000.0000"), nuevoCliente);
+            CuentaResponseDTO updatedResponse = new CuentaResponseDTO(1L, "9999999999", TypeEnum.CORRIENTE, new BigDecimal("5000.0000"), true, nuevoCliente);
 
             when(cuentaRepository.findById(1L)).thenReturn(Optional.of(cuenta));
             when(clienteClient.getClienteById(anyLong())).thenReturn(nuevoCliente);
@@ -280,7 +280,7 @@ class CuentaServiceImplTest {
         @Test
         @DisplayName("Debe lanzar excepcion cuando el numero de cuenta ya esta en uso")
         void actualizarNumeroCuentaDuplicado() {
-            updateDTO = new CuentaUpdateDTO(null, "DUPLICADO", null, null);
+            updateDTO = new CuentaUpdateDTO(null, "DUPLICADO", null, null, null);
 
             when(cuentaRepository.findById(1L)).thenReturn(Optional.of(cuenta));
             when(cuentaRepository.existsByNumeroCuentaAndCuentaIdNot("DUPLICADO", 1L)).thenReturn(true);
@@ -293,7 +293,7 @@ class CuentaServiceImplTest {
         @Test
         @DisplayName("Debe actualizar solo campos no nulos")
         void actualizarSoloCamposNoNulos() {
-            updateDTO = new CuentaUpdateDTO(null, null, null, new BigDecimal("2000.0000"));
+            updateDTO = new CuentaUpdateDTO(null, null, null, new BigDecimal("2000.0000"), null);
 
             when(cuentaRepository.findById(1L)).thenReturn(Optional.of(cuenta));
             when(cuentaRepository.save(any(Cuenta.class))).thenReturn(cuenta);
@@ -309,7 +309,7 @@ class CuentaServiceImplTest {
         @Test
         @DisplayName("Debe actualizar solo tipoCuenta cuando es el unico campo no nulo")
         void actualizarSoloTipoCuenta() {
-            updateDTO = new CuentaUpdateDTO(null, null, TypeEnum.CORRIENTE, null);
+            updateDTO = new CuentaUpdateDTO(null, null, TypeEnum.CORRIENTE, null, null);
 
             when(cuentaRepository.findById(1L)).thenReturn(Optional.of(cuenta));
             when(cuentaRepository.save(any(Cuenta.class))).thenReturn(cuenta);

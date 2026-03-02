@@ -20,6 +20,7 @@ export interface Cuenta {
   numeroCuenta: string;
   tipoCuenta: TipoCuentaEnum;
   saldoInicial: number;
+  estado: boolean;
   cliente: ClienteResponseDTO;
 }
 
@@ -27,6 +28,7 @@ export interface CreateCuentaDTO {
   numeroCuenta: string;
   tipoCuenta: TipoCuentaEnum;
   saldoInicial: number;
+  estado: boolean;
   clienteId: number;
 }
 
@@ -34,5 +36,6 @@ export interface UpdateCuentaDTO {
   numeroCuenta?: string;
   tipoCuenta?: TipoCuentaEnum;
   saldoInicial?: number;
+  estado?: boolean;
   clienteId?: number;
 }

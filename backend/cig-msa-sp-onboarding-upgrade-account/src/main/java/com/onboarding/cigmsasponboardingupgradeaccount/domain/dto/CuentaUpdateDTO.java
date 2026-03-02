@@ -23,4 +23,6 @@ public class CuentaUpdateDTO {
 
     @DecimalMin(value = "0.0", message = "El saldo inicial no puede ser negativo")
     private BigDecimal saldoInicial;
+
+    private Boolean estado;
 }

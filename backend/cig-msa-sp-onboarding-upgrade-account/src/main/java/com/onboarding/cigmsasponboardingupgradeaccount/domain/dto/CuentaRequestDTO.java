@@ -26,4 +26,7 @@ public class CuentaRequestDTO {
     @NotNull(message = "El saldo inicial es obligatorio")
     @DecimalMin(value = "0.0", message = "El saldo inicial no puede ser negativo")
     private BigDecimal saldoInicial;
+
+    @NotNull(message = "El estado es obligatorio")
+    private Boolean estado;
 }

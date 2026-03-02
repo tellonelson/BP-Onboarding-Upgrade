@@ -81,6 +81,10 @@ public class CuentaServiceImpl implements CuentaService {
             cuenta.setSaldoInicial(request.getSaldoInicial());
         }
 
+        if (request.getEstado() != null) {
+            cuenta.setEstado(request.getEstado());
+        }
+
         cuenta = cuentaRepository.save(cuenta);
         ClienteResponseDTO cliente = obtenerCliente(cuenta.getClienteId());
         return cuentaMapper.toResponseDTO(cuenta, cliente);
@@ -98,6 +102,11 @@ public class CuentaServiceImpl implements CuentaService {
             ClienteResponseDTO cliente = clienteClient.getClienteById(clienteId);
             if (cliente == null) {
                 throw new AcccountException("Cliente no encontrado con id: " + clienteId, HttpStatus.NOT_FOUND);
+            }
+            if (Boolean.FALSE.equals(cliente.getEstado())) {
+                throw new AcccountException(
+                        "No se puede crear una cuenta para un cliente inactivo (id: " + clienteId + ")",
+                        HttpStatus.BAD_REQUEST, "clienteId");
             }
             return cliente;
         } catch (FeignException e) {

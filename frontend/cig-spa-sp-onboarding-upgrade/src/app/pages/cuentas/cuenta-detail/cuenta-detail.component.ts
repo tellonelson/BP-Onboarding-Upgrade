@@ -33,7 +33,7 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
               [variant]="'danger'"
               (clicked)="confirmDelete()"
             >
-              Eliminar
+              Desactivar
             </app-button>
           </div>
         </div>
@@ -57,6 +57,14 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
                 <dt class="text-sm font-medium text-gray-500">Saldo Inicial</dt>
                 <dd class="mt-1 text-sm text-gray-900 font-semibold text-green-600">
                   $ {{ cuenta()!.saldoInicial.toLocaleString('es-CO', { minimumFractionDigits: 2 }) }}
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Estado de la Cuenta</dt>
+                <dd class="mt-1">
+                  <span [class]="getEstadoCuentaBadgeClass(cuenta()!.estado)">
+                    {{ cuenta()!.estado ? 'Activa' : 'Inactiva' }}
+                  </span>
                 </dd>
               </div>
               <div>
@@ -91,7 +99,7 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
                 </dd>
               </div>
               <div>
-                <dt class="text-sm font-medium text-gray-500">Estado</dt>
+                <dt class="text-sm font-medium text-gray-500">Estado del Cliente</dt>
                 <dd class="mt-1">
                   <span [class]="getEstadoBadgeClass(cuenta()!.cliente.estado)">
                     {{ cuenta()!.cliente.estado ? 'Activo' : 'Inactivo' }}
@@ -145,9 +153,9 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
     <!-- Confirmation Dialog -->
     <app-confirmation-dialog
       #confirmDialog
-      [title]="'Eliminar Cuenta'"
-      [message]="'¿Está seguro que desea eliminar esta cuenta? Esta acción no se puede deshacer.'"
-      [confirmText]="'Eliminar'"
+      [title]="'Desactivar Cuenta'"
+      [message]="'¿Está seguro que desea desactivar esta cuenta? La cuenta quedará en estado inactivo.'"
+      [confirmText]="'Desactivar'"
       [cancelText]="'Cancelar'"
       [confirmVariant]="'danger'"
       (confirmed)="handleDeleteConfirm($event)"
@@ -194,14 +202,14 @@ export class CuentaDetailComponent implements OnInit {
 
   handleDeleteConfirm(confirmed: boolean): void {
     if (confirmed && this.cuenta()) {
-      this.cuentasService.delete(this.cuenta()!.cuentaId).subscribe({
+      this.cuentasService.update(this.cuenta()!.cuentaId, { estado: false }).subscribe({
         next: () => {
-          this.notificationService.success('Cuenta eliminada correctamente');
+          this.notificationService.success('Cuenta desactivada correctamente');
           this.router.navigate(['/cuentas']);
         },
         error: (error) => {
-          this.notificationService.error('Error al eliminar la cuenta');
-          console.error('Error deleting cuenta:', error);
+          this.notificationService.error('Error al desactivar la cuenta');
+          console.error('Error deactivating cuenta:', error);
         }
       });
     }
@@ -217,6 +225,13 @@ export class CuentaDetailComponent implements OnInit {
       CORRIENTE: 'Corriente'
     };
     return labels[tipo] || tipo;
+  }
+
+  getEstadoCuentaBadgeClass(estado: boolean): string {
+    const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
+    return estado
+      ? `${baseClasses} bg-blue-100 text-blue-800`
+      : `${baseClasses} bg-red-100 text-red-800`;
   }
 
   getEstadoBadgeClass(estado: boolean): string {

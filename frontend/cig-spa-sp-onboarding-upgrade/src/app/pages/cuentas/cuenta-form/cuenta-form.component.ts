@@ -133,6 +133,23 @@ import { Cliente } from '../../../core/models/cliente.model';
                 </p>
               }
             </div>
+
+            <!-- Estado de la Cuenta -->
+            @if (isEditMode()) {
+              <div>
+                <label for="estadoCuenta" class="block text-sm font-medium text-gray-700 mb-1">
+                  Estado de la Cuenta
+                </label>
+                <select
+                  id="estadoCuenta"
+                  formControlName="estado"
+                  class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option [value]="true">Activa</option>
+                  <option [value]="false">Inactiva</option>
+                </select>
+              </div>
+            }
           </div>
 
           <!-- Actions -->
@@ -189,7 +206,8 @@ export class CuentaFormComponent implements OnInit {
       clienteId: ['', [Validators.required]],
       numeroCuenta: ['', [Validators.required, Validators.minLength(10)]],
       tipoCuenta: ['', [Validators.required]],
-      saldoInicial: [0, [Validators.required, Validators.min(0)]]
+      saldoInicial: [0, [Validators.required, Validators.min(0)]],
+      estado: [true]
     });
   }
 
@@ -224,7 +242,8 @@ export class CuentaFormComponent implements OnInit {
           clienteId: cuenta.cliente.id,
           numeroCuenta: cuenta.numeroCuenta,
           tipoCuenta: cuenta.tipoCuenta,
-          saldoInicial: cuenta.saldoInicial
+          saldoInicial: cuenta.saldoInicial,
+          estado: cuenta.estado
         });
       },
       error: (error) => {
@@ -249,6 +268,7 @@ export class CuentaFormComponent implements OnInit {
       numeroCuenta: formValue.numeroCuenta,
       tipoCuenta: formValue.tipoCuenta,
       saldoInicial: formValue.saldoInicial,
+      estado: formValue.estado === 'false' ? false : Boolean(formValue.estado),
       clienteId: parseInt(formValue.clienteId, 10)
     };
 

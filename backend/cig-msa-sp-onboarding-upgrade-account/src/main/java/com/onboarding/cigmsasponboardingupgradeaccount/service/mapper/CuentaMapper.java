@@ -15,6 +15,7 @@ public class CuentaMapper {
         cuenta.setNumeroCuenta(dto.getNumeroCuenta());
         cuenta.setTipoCuenta(dto.getTipoCuenta());
         cuenta.setSaldoInicial(dto.getSaldoInicial());
+        cuenta.setEstado(dto.getEstado());
         return cuenta;
     }
 
@@ -24,6 +25,7 @@ public class CuentaMapper {
         dto.setNumeroCuenta(cuenta.getNumeroCuenta());
         dto.setTipoCuenta(cuenta.getTipoCuenta());
         dto.setSaldoInicial(cuenta.getSaldoInicial());
+        dto.setEstado(cuenta.getEstado());
         dto.setCliente(cliente);
         return dto;
     }

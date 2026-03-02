@@ -16,5 +16,6 @@ public class CuentaResponseDTO {
     private String numeroCuenta;
     private TypeEnum tipoCuenta;
     private BigDecimal saldoInicial;
+    private Boolean estado;
     private ClienteResponseDTO cliente;
 }

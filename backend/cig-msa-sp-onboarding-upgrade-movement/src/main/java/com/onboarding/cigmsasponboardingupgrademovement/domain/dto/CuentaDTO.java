@@ -17,5 +17,6 @@ public class CuentaDTO {
     private String numeroCuenta;
     private String tipoCuenta;
     private BigDecimal saldoInicial;
+    private Boolean estado;
     private ClienteDTO cliente;
 }

@@ -57,7 +57,7 @@ class MovimientoServiceImplTest {
     @BeforeEach
     void setUp() {
         clienteDTO = new ClienteDTO(1L, "Juan Perez", "1234567890", 30, "MASCULINO", "0991234567", "Quito", "pass123", true);
-        cuentaDTO = new CuentaDTO(1L, "1234567890", "AHORROS", new BigDecimal("1000.0000"), clienteDTO);
+        cuentaDTO = new CuentaDTO(1L, "1234567890", "AHORROS", new BigDecimal("1000.0000"), true, clienteDTO);
 
         movimiento = Movimiento.builder()
                 .movimientoId(1L)
@@ -168,6 +168,29 @@ class MovimientoServiceImplTest {
             assertThatThrownBy(() -> movimientoService.crear(debitoRequest))
                     .isInstanceOf(MovementException.class)
                     .hasMessage("Saldo no disponible");
+        }
+
+        @Test
+        @DisplayName("Debe lanzar excepcion cuando la cuenta esta inactiva")
+        void crearMovimientoCuentaInactiva() {
+            CuentaDTO cuentaInactiva = new CuentaDTO(1L, "1234567890", "AHORROS", new BigDecimal("1000.0000"), false, clienteDTO);
+            when(cuentaClient.getCuentaById(1L)).thenReturn(cuentaInactiva);
+
+            assertThatThrownBy(() -> movimientoService.crear(requestDTO))
+                    .isInstanceOf(MovementException.class)
+                    .hasMessageContaining("cuenta inactiva");
+        }
+
+        @Test
+        @DisplayName("Debe lanzar excepcion cuando el cliente esta inactivo")
+        void crearMovimientoClienteInactivo() {
+            ClienteDTO clienteInactivo = new ClienteDTO(1L, "Juan Perez", "1234567890", 30, "MASCULINO", "0991234567", "Quito", "pass123", false);
+            CuentaDTO cuentaConClienteInactivo = new CuentaDTO(1L, "1234567890", "AHORROS", new BigDecimal("1000.0000"), true, clienteInactivo);
+            when(cuentaClient.getCuentaById(1L)).thenReturn(cuentaConClienteInactivo);
+
+            assertThatThrownBy(() -> movimientoService.crear(requestDTO))
+                    .isInstanceOf(MovementException.class)
+                    .hasMessageContaining("cliente inactivo");
         }
 
         @Test
@@ -309,6 +332,31 @@ class MovimientoServiceImplTest {
         }
 
         @Test
+        @DisplayName("Debe lanzar excepcion cuando la cuenta esta inactiva al actualizar")
+        void actualizarCuentaInactiva() {
+            CuentaDTO cuentaInactiva = new CuentaDTO(1L, "1234567890", "AHORROS", new BigDecimal("1000.0000"), false, clienteDTO);
+            when(movimientoRepository.findById(1L)).thenReturn(Optional.of(movimiento));
+            when(cuentaClient.getCuentaById(1L)).thenReturn(cuentaInactiva);
+
+            assertThatThrownBy(() -> movimientoService.actualizar(1L, requestDTO))
+                    .isInstanceOf(MovementException.class)
+                    .hasMessageContaining("cuenta inactiva");
+        }
+
+        @Test
+        @DisplayName("Debe lanzar excepcion cuando el cliente esta inactivo al actualizar")
+        void actualizarClienteInactivo() {
+            ClienteDTO clienteInactivo = new ClienteDTO(1L, "Juan Perez", "1234567890", 30, "MASCULINO", "0991234567", "Quito", "pass123", false);
+            CuentaDTO cuentaConClienteInactivo = new CuentaDTO(1L, "1234567890", "AHORROS", new BigDecimal("1000.0000"), true, clienteInactivo);
+            when(movimientoRepository.findById(1L)).thenReturn(Optional.of(movimiento));
+            when(cuentaClient.getCuentaById(1L)).thenReturn(cuentaConClienteInactivo);
+
+            assertThatThrownBy(() -> movimientoService.actualizar(1L, requestDTO))
+                    .isInstanceOf(MovementException.class)
+                    .hasMessageContaining("cliente inactivo");
+        }
+
+        @Test
         @DisplayName("Debe lanzar excepcion cuando saldo insuficiente al actualizar")
         void actualizarSaldoInsuficiente() {
             MovimientoRequestDTO debitoRequest = MovimientoRequestDTO.builder()
@@ -430,7 +478,7 @@ class MovimientoServiceImplTest {
         @Test
         @DisplayName("Debe manejar cuenta sin cliente en estado de cuenta")
         void obtenerEstadoCuentaSinCliente() {
-            CuentaDTO cuentaSinCliente = new CuentaDTO(2L, "9999999999", "CORRIENTE", new BigDecimal("500.0000"), null);
+            CuentaDTO cuentaSinCliente = new CuentaDTO(2L, "9999999999", "CORRIENTE", new BigDecimal("500.0000"), true, null);
 
             when(cuentaClient.getAllCuentas()).thenReturn(List.of(cuentaSinCliente));
             when(movimientoRepository.findByCuentaIdOrderByFechaAsc(2L)).thenReturn(Collections.emptyList());
