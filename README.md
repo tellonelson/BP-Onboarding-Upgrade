@@ -34,6 +34,13 @@ Aplicacion de onboarding bancario compuesta por microservicios Spring Boot y un 
 - **Java 21** (para ejecucion local y tests del backend)
 - **Node.js 20+** y **npm** (para ejecucion local y tests del frontend)
 
+## Clonar el repositorio
+
+```bash
+git clone https://github.com/tellonelson/BP-Onboarding-Upgrade.git
+cd BP-Onboarding-Upgrade
+```
+
 ## Ejecucion con Docker
 
 ### Levantar toda la aplicacion
