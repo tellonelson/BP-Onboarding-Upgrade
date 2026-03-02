@@ -6,7 +6,7 @@
     "start": "ng serve --proxy-config proxy.conf.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "jest --config jest.config.js"
   },
   "prettier": {
     "printWidth": 100,
@@ -32,17 +32,23 @@
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.7",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "zone.js": "^0.16.1"
   },
   "devDependencies": {
     "@angular/build": "^21.1.4",
     "@angular/cli": "^21.1.4",
     "@angular/compiler-cli": "^21.1.0",
+    "@angular/platform-browser-dynamic": "^21.1.0",
     "@tailwindcss/postcss": "^4.1.12",
-    "jsdom": "^27.1.0",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.0",
+    "jest-environment-jsdom": "^30.0.0",
+    "jest-preset-angular": "^16.1.1",
+    "jsdom": "^28.1.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.12",
-    "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "ts-jest": "^29.4.0",
+    "typescript": "~5.9.2"
   }
 }

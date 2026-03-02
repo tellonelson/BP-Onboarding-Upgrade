@@ -72,6 +72,15 @@ services:
       - postgres
       - upgrade-account
 
+  upgrade-frontend:
+    build:
+      context: ./frontend/cig-spa-sp-onboarding-upgrade
+    container_name: onboarding_frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - gateway
+
 volumes:
   pgdata:
     driver: local
