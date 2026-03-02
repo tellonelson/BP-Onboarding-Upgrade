@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: onboarding_postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: rootpassword
+      POSTGRES_DB: onboarding_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: ./backend/cig-msa-sp-onboarding-gateway
+    container_name: onboarding_gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - CUSTOMER_URI=http://upgrade-customer:8081
+      - ACCOUNT_URI=http://upgrade-account:8082
+      - MOVEMENT_URI=http://upgrade-movement:8083
+    depends_on:
+      - upgrade-customer
+      - upgrade-account
+      - upgrade-movement
+
+  upgrade-customer:
+    build:
+      context: ./backend/cig-msa-sp-onboarding-upgrade-customer
+    container_name: onboarding_customer
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/onboarding_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+    depends_on:
+      - postgres
+
+  upgrade-account:
+    build:
+      context: ./backend/cig-msa-sp-onboarding-upgrade-account
+    container_name: onboarding_account
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/onboarding_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - CLIENTE_SERVICE_URL=http://upgrade-customer:8081
+    depends_on:
+      - postgres
+      - upgrade-customer
+
+  upgrade-movement:
+    build:
+      context: ./backend/cig-msa-sp-onboarding-upgrade-movement
+    container_name: onboarding_movement
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/onboarding_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - ACCOUNT_SERVICE_URL=http://upgrade-account:8082
+    depends_on:
+      - postgres
+      - upgrade-account
+
+volumes:
+  pgdata:
+    driver: local

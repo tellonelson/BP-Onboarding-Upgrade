@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: cig-msa-sp-onboarding-gateway
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: ms-customer
+            uri: ${CUSTOMER_URI:http://localhost:8081}
+            predicates:
+              - Path=/clientes/**
+          - id: ms-account
+            uri: ${ACCOUNT_URI:http://localhost:8082}
+            predicates:
+              - Path=/cuentas/**
+          - id: ms-movement 
+            uri: ${MOVEMENT_URI:http://localhost:8083}
+            predicates:
+              - Path=/movimientos/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+
